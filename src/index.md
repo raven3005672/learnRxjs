@@ -33,5 +33,33 @@ const hot$ = new Observable(observer => {
 })
 ```
 
+实现一个操作符
 
+返回一个全新的Observable对象。
+对上游和下游的订阅及退订处理。
+处理异常情况。
+及时释放资源。
+
+function map(project) {
+  return new Observable(observer => {
+    const sub = this.subscribe({
+      next: value => {
+        try {
+          observer.next(project(value));
+        } catch (err) {
+          observer.error(err);
+        }
+      },
+      error: err => observer.next(err),
+      complete: () => observer.complete(),
+    });
+    return {
+      unsubscribe: () => {
+        sub.unsubscribe();
+      }
+    }
+  })
+}
+
+const result$ = source$.map(x => x * 2);
 
